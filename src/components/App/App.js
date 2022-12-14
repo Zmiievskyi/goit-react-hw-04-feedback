@@ -1,63 +1,54 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { Box } from './App.styled';
 import { GlobalStyle } from 'components/Common/GlobalStyle';
 import { Statistics, Notification } from 'components/Statistics/';
 import { FeedbackOptions } from 'components/FeedbackOptions/';
 import { Section } from 'components/Common';
 
-class App extends Component {
-  state = {
-    GOOD: 0,
-    NEUTRAL: 0,
-    BAD: 0,
+function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const total = good + neutral + bad;
+
+  let percent = ((good * 100) / total).toFixed(0);
+
+  const handlerFeedback = data => {
+    if (data === 'GOOD') {
+      setGood(good + 1);
+    }
+    if (data === 'NEUTRAL') {
+      setNeutral(neutral + 1);
+    }
+    if (data === 'BAD') {
+      setBad(bad + 1);
+    }
   };
 
-  countTotalFeedback = () => {
-    let total = Object.values(this.state).reduce((acc, item) => {
-      return acc + item;
-    }, 0);
-    return total;
-  };
+  return (
+    <Box alignItems="center" flexDirection="column">
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          state={['good', 'neutral', 'bad']}
+          btnDown={handlerFeedback}
+        />
+      </Section>
+      <Section title="Statistics" display="flex" alignContent="flex-start">
+        {total ? (
+          <Statistics
+            list={['good', 'neutral', 'bad']}
+            total={total}
+            count={percent}
+          />
+        ) : (
+          <Notification message="No feedback given" />
+        )}
+      </Section>
 
-  countPositiveFeedbackPercentage = () => {
-    let percent = ((this.state.GOOD * 100) / this.countTotalFeedback()).toFixed(
-      0
-    );
-    return percent;
-  };
-
-  feedbackHandler = data => {
-    this.setState(prevState => {
-      return {
-        [data]: prevState[data] + 1,
-      };
-    });
-  };
-
-  render() {
-    const totalFeedBack = this.countTotalFeedback();
-    const positivePrecent = this.countPositiveFeedbackPercentage();
-    return (
-      <Box alignItems="center" flexDirection="column">
-        <Section title="Please leave feedback">
-          <FeedbackOptions state={this.state} btnDown={this.feedbackHandler} />
-        </Section>
-        <Section title="Statistics" display="flex" alignContent="flex-start">
-          {totalFeedBack ? (
-            <Statistics
-              list={this.state}
-              total={totalFeedBack}
-              count={positivePrecent}
-            />
-          ) : (
-            <Notification message="No feedback given" />
-          )}
-        </Section>
-
-        <GlobalStyle />
-      </Box>
-    );
-  }
+      <GlobalStyle />
+    </Box>
+  );
 }
 
 export default App;

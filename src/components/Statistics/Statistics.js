@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import { Box } from '../App/App.styled';
 
 export default function Statistics({ list, total, count }) {
-  const id = Object.keys(list);
+  
   return (
     <Box flexDirection="column" alignContent="space-around" flexWrap="wrap">
-      {id.map(item => {
+      {list.map(item => {
         return (
           <li key={item}>
             {item}: {list[item]}
